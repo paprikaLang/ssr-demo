@@ -2,7 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 
 import { createRouter } from './router.js'
-import { createStore } from './store.js'
+import { createStore } from './store'
 import { sync } from 'vuex-router-sync'
 
 // 导出一个工厂函数，用于创建新的

@@ -488,7 +488,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__App_vue__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__router_js__ = __webpack_require__(14);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store_js__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_vuex_router_sync__ = __webpack_require__(23);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_vuex_router_sync___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_vuex_router_sync__);
 
@@ -503,7 +503,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 function createApp() {
 
   var router = Object(__WEBPACK_IMPORTED_MODULE_2__router_js__["a" /* createRouter */])();
-  var store = Object(__WEBPACK_IMPORTED_MODULE_3__store_js__["a" /* createStore */])();
+  var store = Object(__WEBPACK_IMPORTED_MODULE_3__store__["a" /* createStore */])();
 
   // 同步路由状态(route state)到 store
   Object(__WEBPACK_IMPORTED_MODULE_4_vuex_router_sync__["sync"])(store, router);

@@ -3,6 +3,7 @@
     <img src="./assets/logo.png">
     <h1>{{ msg }}</h1>
     <input type="text" v-model='msg'>
+    <br>
     <router-view></router-view>
     <ul>
       <li><a href="https://vuejs.org" target="_blank">Core Docs</a></li>
