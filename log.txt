@@ -1,0 +1,17 @@
+1. vue init webpack-simple ssr
+
+3. app.js 作用是构建一个Vue实例,供服务端和客户端使用. 在纯客户端app.js会挂载实例到DOM.
+4. 两个entry: client entry , 挂载Vue实例到指定的DOM上.  server entry , 使用 export 导出的函数, 负责调用组件内获取SSR渲染所需数据的方法(asyncData) ,  并存储在上下文中, 这个函数会在每一次的渲染中重复调用.
+
+5. webpack 打包 : server bundle: 运行在服务器通过node生成预渲染的HTML字符串, 混入异步获取的数据, 发送到客户端完成初始化渲染 . client bundle: 初始化渲染不依赖它, 客户端拿到服务器的HTML字符串会去激活它, 使其变成由Vue动态管理的DOM.
+
+6. 工厂函数封装这个Vue实例. 以便每个用户请求的是一个新实例,避免交叉污染.
+
+7. 打开浏览器的network, 查看初始化渲染的HTML,完全不依赖客户端的js代码,只有一个script标签,将服务器entry拿到的数据挂载到window上.
+这个静态HTML没有任何交互逻辑,客户端才是实现交互的.
+
+8. 所以服务端只能执行created和beforeCreate, 因为服务端不能操作DOM.
+
+9. ssr服务端不带cookie, 需要手动拿到浏览器的cookie传给服务端的请求.
+10. ssr要求DOM结构规范. 
+11. 使用Vue, 大多数页面DOM元素都是在客户端根据js动态生成,浏览器爬虫不会等到数据返回
