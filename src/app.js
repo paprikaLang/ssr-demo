@@ -21,7 +21,7 @@ export function createApp () {
     router,
     store
   })
-
+  console.log(app)
   return { app, router, store }
 }
 

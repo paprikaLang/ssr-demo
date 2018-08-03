@@ -1,12 +1,18 @@
 const Vue = require('vue')
 const express = require('express')
 const server = express()
-const renderer = require('vue-server-renderer').createRenderer({
-  template: require('fs').readFileSync('./src/index.template.html', 'utf-8')
+
+const serverBundle = require('./dist/vue-ssr-server-bundle.json')
+const clientManifest = require('./dist/vue-ssr-client-manifest.json')
+
+const renderer = require('vue-server-renderer').createBundleRenderer(serverBundle, {
+  runInNewContext: false,
+  template: require('fs').readFileSync('./src/index.template.html', 'utf-8'),
+  clientManifest
 })
 //new Vue也从server中抽离出来,为每个请求创建一个新的实例,避免共享带来的交叉请求状态污染
 // const createApp = require('./src/app')
-const createApp = require('./dist/main.server.js').default
+// const createApp = require('./dist/main.server.js').default
 
 server.use('/dist', express.static('./dist/'))
 
@@ -21,8 +27,8 @@ server.get('*', (req, res) => {
     url: req.url
   }
   //为每个请求创建一个新的实例,工厂函数
-  const app = createApp(context).then(app => {
-    renderer.renderToString(app, context, (err, html) => {
+  // const app = createApp(context).then(app => {
+    renderer.renderToString(context, (err, html) => {
       if (err) {
         res.status(500).end('Internal Server Error')
         return
@@ -30,7 +36,7 @@ server.get('*', (req, res) => {
       res.end(html)
     })
   })
-})
+// })
 
 server.listen(8089)
 // server.get('*', (req, res) => {
