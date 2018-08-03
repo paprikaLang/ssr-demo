@@ -2,6 +2,7 @@ dependencies:
   babel-preset-stage-2: 6.24.1
   vue-router: 3.0.1
   vuex: 3.0.1
+  vuex-router-sync: 5.0.0
 packages:
   /ansi-regex/2.1.1:
     dev: false
@@ -390,6 +391,14 @@ packages:
     resolution:
       integrity: sha1-2bBa2cdCC6D2JtZQDWk+YAkswek=
       tarball: 'http://registry.npm.taobao.org/vue-router/download/vue-router-3.0.1.tgz'
+  /vuex-router-sync/5.0.0:
+    dev: false
+    peerDependencies:
+      vue-router: ^3.0.0
+      vuex: ^3.0.0
+    resolution:
+      integrity: sha1-GiJcF6Hdni90rwobLGIHLpSSswU=
+      tarball: 'http://registry.npm.taobao.org/vuex-router-sync/download/vuex-router-sync-5.0.0.tgz'
   /vuex/3.0.1:
     dev: false
     resolution:
@@ -402,3 +411,4 @@ specifiers:
   babel-preset-stage-2: ^6.24.1
   vue-router: ^3.0.1
   vuex: ^3.0.1
+  vuex-router-sync: ^5.0.0

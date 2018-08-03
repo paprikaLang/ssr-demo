@@ -10,7 +10,8 @@ export function createRouter () {
     mode: 'history',
     routes: [
       { path: '/', component: Hello },
-      { path: '/world/:id', component: () => import('./components/World.vue')}
+      { path: '/world/:id', component: () => import('./components/World.vue')},
+      { path: '/item/:id', component: () => import('./components/Item.vue')}
     ]
   })
 }

@@ -6,7 +6,7 @@ module.exports =
 /******/ 	// object to store loaded chunks
 /******/ 	// "0" means "already loaded"
 /******/ 	var installedChunks = {
-/******/ 		1: 0
+/******/ 		2: 0
 /******/ 	};
 /******/
 /******/ 	// The require function
@@ -96,172 +96,10 @@ module.exports =
 /* 0 */
 /***/ (function(module, exports) {
 
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-// css base code, injected by the css-loader
-module.exports = function(useSourceMap) {
-	var list = [];
-
-	// return the list of modules as css string
-	list.toString = function toString() {
-		return this.map(function (item) {
-			var content = cssWithMappingToString(item, useSourceMap);
-			if(item[2]) {
-				return "@media " + item[2] + "{" + content + "}";
-			} else {
-				return content;
-			}
-		}).join("");
-	};
-
-	// import a list of modules into the list
-	list.i = function(modules, mediaQuery) {
-		if(typeof modules === "string")
-			modules = [[null, modules, ""]];
-		var alreadyImportedModules = {};
-		for(var i = 0; i < this.length; i++) {
-			var id = this[i][0];
-			if(typeof id === "number")
-				alreadyImportedModules[id] = true;
-		}
-		for(i = 0; i < modules.length; i++) {
-			var item = modules[i];
-			// skip already imported module
-			// this implementation is not 100% perfect for weird media query combinations
-			//  when a module is imported multiple times with different media queries.
-			//  I hope this will never occur (Hey this way we have smaller bundles)
-			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-				if(mediaQuery && !item[2]) {
-					item[2] = mediaQuery;
-				} else if(mediaQuery) {
-					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-				}
-				list.push(item);
-			}
-		}
-	};
-	return list;
-};
-
-function cssWithMappingToString(item, useSourceMap) {
-	var content = item[1] || '';
-	var cssMapping = item[3];
-	if (!cssMapping) {
-		return content;
-	}
-
-	if (useSourceMap && typeof btoa === 'function') {
-		var sourceMapping = toComment(cssMapping);
-		var sourceURLs = cssMapping.sources.map(function (source) {
-			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
-		});
-
-		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
-	}
-
-	return [content].join('\n');
-}
-
-// Adapted from convert-source-map (MIT)
-function toComment(sourceMap) {
-	// eslint-disable-next-line no-undef
-	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
-	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
-
-	return '/*# ' + data + ' */';
-}
-
+module.exports = require("vue");
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var listToStyles = __webpack_require__(11)
-
-module.exports = function (parentId, list, isProduction, context) {
-  if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
-    context = __VUE_SSR_CONTEXT__
-  }
-  if (context) {
-    if (!context.hasOwnProperty('styles')) {
-      Object.defineProperty(context, 'styles', {
-        enumerable: true,
-        get: function() {
-          return renderStyles(context._styles)
-        }
-      })
-      // expose renderStyles for vue-server-renderer (vuejs/#6353)
-      context._renderStyles = renderStyles
-    }
-
-    var styles = context._styles || (context._styles = {})
-    list = listToStyles(parentId, list)
-    if (isProduction) {
-      addStyleProd(styles, list)
-    } else {
-      addStyleDev(styles, list)
-    }
-  }
-}
-
-// In production, render as few style tags as possible.
-// (mostly because IE9 has a limit on number of style tags)
-function addStyleProd (styles, list) {
-  for (var i = 0; i < list.length; i++) {
-    var parts = list[i].parts
-    for (var j = 0; j < parts.length; j++) {
-      var part = parts[j]
-      // group style tags by media types.
-      var id = part.media || 'default'
-      var style = styles[id]
-      if (style) {
-        if (style.ids.indexOf(part.id) < 0) {
-          style.ids.push(part.id)
-          style.css += '\n' + part.css
-        }
-      } else {
-        styles[id] = {
-          ids: [part.id],
-          css: part.css,
-          media: part.media
-        }
-      }
-    }
-  }
-}
-
-// In dev we use individual style tag for each module for hot-reload
-// and source maps.
-function addStyleDev (styles, list) {
-  for (var i = 0; i < list.length; i++) {
-    var parts = list[i].parts
-    for (var j = 0; j < parts.length; j++) {
-      var part = parts[j]
-      styles[part.id] = {
-        ids: [part.id],
-        css: part.css,
-        media: part.media
-      }
-    }
-  }
-}
-
-function renderStyles (styles) {
-  var css = ''
-  for (var key in styles) {
-    var style = styles[key]
-    css += '<style data-vue-ssr-id="' + style.ids.join(' ') + '"' +
-        (style.media ? ( ' media="' + style.media + '"' ) : '') + '>' +
-        style.css + '</style>'
-  }
-  return css
-}
-
-
-/***/ }),
-/* 2 */
 /***/ (function(module, exports) {
 
 /* globals __VUE_SSR_CONTEXT__ */
@@ -370,10 +208,172 @@ module.exports = function normalizeComponent (
 
 
 /***/ }),
-/* 3 */
+/* 2 */
 /***/ (function(module, exports) {
 
-module.exports = require("vue");
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+// css base code, injected by the css-loader
+module.exports = function(useSourceMap) {
+	var list = [];
+
+	// return the list of modules as css string
+	list.toString = function toString() {
+		return this.map(function (item) {
+			var content = cssWithMappingToString(item, useSourceMap);
+			if(item[2]) {
+				return "@media " + item[2] + "{" + content + "}";
+			} else {
+				return content;
+			}
+		}).join("");
+	};
+
+	// import a list of modules into the list
+	list.i = function(modules, mediaQuery) {
+		if(typeof modules === "string")
+			modules = [[null, modules, ""]];
+		var alreadyImportedModules = {};
+		for(var i = 0; i < this.length; i++) {
+			var id = this[i][0];
+			if(typeof id === "number")
+				alreadyImportedModules[id] = true;
+		}
+		for(i = 0; i < modules.length; i++) {
+			var item = modules[i];
+			// skip already imported module
+			// this implementation is not 100% perfect for weird media query combinations
+			//  when a module is imported multiple times with different media queries.
+			//  I hope this will never occur (Hey this way we have smaller bundles)
+			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+				if(mediaQuery && !item[2]) {
+					item[2] = mediaQuery;
+				} else if(mediaQuery) {
+					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+				}
+				list.push(item);
+			}
+		}
+	};
+	return list;
+};
+
+function cssWithMappingToString(item, useSourceMap) {
+	var content = item[1] || '';
+	var cssMapping = item[3];
+	if (!cssMapping) {
+		return content;
+	}
+
+	if (useSourceMap && typeof btoa === 'function') {
+		var sourceMapping = toComment(cssMapping);
+		var sourceURLs = cssMapping.sources.map(function (source) {
+			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
+		});
+
+		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
+	}
+
+	return [content].join('\n');
+}
+
+// Adapted from convert-source-map (MIT)
+function toComment(sourceMap) {
+	// eslint-disable-next-line no-undef
+	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
+	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
+
+	return '/*# ' + data + ' */';
+}
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var listToStyles = __webpack_require__(11)
+
+module.exports = function (parentId, list, isProduction, context) {
+  if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+    context = __VUE_SSR_CONTEXT__
+  }
+  if (context) {
+    if (!context.hasOwnProperty('styles')) {
+      Object.defineProperty(context, 'styles', {
+        enumerable: true,
+        get: function() {
+          return renderStyles(context._styles)
+        }
+      })
+      // expose renderStyles for vue-server-renderer (vuejs/#6353)
+      context._renderStyles = renderStyles
+    }
+
+    var styles = context._styles || (context._styles = {})
+    list = listToStyles(parentId, list)
+    if (isProduction) {
+      addStyleProd(styles, list)
+    } else {
+      addStyleDev(styles, list)
+    }
+  }
+}
+
+// In production, render as few style tags as possible.
+// (mostly because IE9 has a limit on number of style tags)
+function addStyleProd (styles, list) {
+  for (var i = 0; i < list.length; i++) {
+    var parts = list[i].parts
+    for (var j = 0; j < parts.length; j++) {
+      var part = parts[j]
+      // group style tags by media types.
+      var id = part.media || 'default'
+      var style = styles[id]
+      if (style) {
+        if (style.ids.indexOf(part.id) < 0) {
+          style.ids.push(part.id)
+          style.css += '\n' + part.css
+        }
+      } else {
+        styles[id] = {
+          ids: [part.id],
+          css: part.css,
+          media: part.media
+        }
+      }
+    }
+  }
+}
+
+// In dev we use individual style tag for each module for hot-reload
+// and source maps.
+function addStyleDev (styles, list) {
+  for (var i = 0; i < list.length; i++) {
+    var parts = list[i].parts
+    for (var j = 0; j < parts.length; j++) {
+      var part = parts[j]
+      styles[part.id] = {
+        ids: [part.id],
+        css: part.css,
+        media: part.media
+      }
+    }
+  }
+}
+
+function renderStyles (styles) {
+  var css = ''
+  for (var key in styles) {
+    var style = styles[key]
+    css += '<style data-vue-ssr-id="' + style.ids.join(' ') + '"' +
+        (style.media ? ( ' media="' + style.media + '"' ) : '') + '>' +
+        style.css + '</style>'
+  }
+  return css
+}
+
 
 /***/ }),
 /* 4 */
@@ -434,31 +434,48 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = (function (context) {
-   // 因为有可能会是异步路由钩子函数或组件，所以我们将返回一个 Promise，
-   // 以便服务器能够等待所有的内容在渲染前，
-   // 就已经准备就绪。
-   return new Promise(function (resolve, reject) {
-      var _createApp = Object(__WEBPACK_IMPORTED_MODULE_0__app__["a" /* createApp */])(),
-          app = _createApp.app,
-          router = _createApp.router;
-      // 设置服务器端 router 的位置
+  // 因为有可能会是异步路由钩子函数或组件，所以我们将返回一个 Promise，
+  // 以便服务器能够等待所有的内容在渲染前，
+  // 就已经准备就绪。
+  return new Promise(function (resolve, reject) {
+    var _createApp = Object(__WEBPACK_IMPORTED_MODULE_0__app__["a" /* createApp */])(),
+        app = _createApp.app,
+        router = _createApp.router,
+        store = _createApp.store;
+    // 设置服务器端 router 的位置
 
 
-      router.push(context.url);
-      // 等到 router 将可能的异步组件和钩子函数解析完
-      router.onReady(function () {
-         var matchedComponents = router.getMatchedComponents();
-         // 匹配不到的路由，执行 reject 函数，并返回 404
-         if (!matchedComponents.length) {
-            return reject({ code: 404 });
-         }
+    router.push(context.url);
+    // 等到 router 将可能的异步组件和钩子函数解析完
+    router.onReady(function () {
+      var matchedComponents = router.getMatchedComponents();
+      // 匹配不到的路由，执行 reject 函数，并返回 404
+      if (!matchedComponents.length) {
+        return reject({ code: 404 });
+      }
+      // 对所有匹配的路由组件调用 `asyncData()`
+      Promise.all(matchedComponents.map(function (Component) {
+        if (Component.asyncData) {
+          return Component.asyncData({
+            store: store,
+            route: router.currentRoute
+          });
+        }
+      })).then(function () {
+        // 在所有预取钩子(preFetch hook) resolve 后，
+        // 我们的 store 现在已经填充入渲染应用程序所需的状态。
+        // 当我们将状态附加到上下文，
+        // 并且 `template` 选项用于 renderer 时，
+        // 状态将自动序列化为 `window.__INITIAL_STATE__`，并注入 HTML。
+        context.state = store.state;
 
-         // Promise 应该 resolve 应用程序实例，以便它可以渲染
-         resolve(app);
-      }, reject);
+        // Promise 应该 resolve 应用程序实例，以便它可以渲染
+        resolve(app);
+      }).catch(reject);
+    }, reject);
 
-      // return app
-   });
+    // return app
+  });
 });
 
 /***/ }),
@@ -467,10 +484,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = createApp;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__App_vue__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__router_js__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store_js__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_vuex_router_sync__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_vuex_router_sync___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_vuex_router_sync__);
+
+
 
 
 
@@ -481,16 +503,21 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 function createApp() {
 
   var router = Object(__WEBPACK_IMPORTED_MODULE_2__router_js__["a" /* createRouter */])();
+  var store = Object(__WEBPACK_IMPORTED_MODULE_3__store_js__["a" /* createStore */])();
+
+  // 同步路由状态(route state)到 store
+  Object(__WEBPACK_IMPORTED_MODULE_4_vuex_router_sync__["sync"])(store, router);
 
   var app = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
     // 根实例简单的渲染应用程序组件。
     render: function render(h) {
       return h(__WEBPACK_IMPORTED_MODULE_1__App_vue__["a" /* default */]);
     },
-    router: router
+    router: router,
+    store: store
   });
 
-  return { app: app, router: router };
+  return { app: app, router: router, store: store };
 }
 
 // const Vue = require('vue')
@@ -516,7 +543,7 @@ function injectStyle (ssrContext) {
 var i
 ;(i=__webpack_require__(9),i.__inject__&&i.__inject__(ssrContext),i)
 }
-var normalizeComponent = __webpack_require__(2)
+var normalizeComponent = __webpack_require__(1)
 /* script */
 
 
@@ -554,7 +581,7 @@ var content = __webpack_require__(10);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add CSS to SSR context
-var add = __webpack_require__(1)
+var add = __webpack_require__(3)
 module.exports.__inject__ = function (context) {
   add("2fbdf82a", content, false, context)
 };
@@ -563,7 +590,7 @@ module.exports.__inject__ = function (context) {
 /* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(0)(true);
+exports = module.exports = __webpack_require__(2)(true);
 // imports
 
 
@@ -653,7 +680,7 @@ module.exports = __webpack_require__.p + "logo.png?82b9c7a5a3f405032b1db71a25f67
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = createRouter;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vue_router__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vue_router___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_vue_router__);
@@ -669,7 +696,9 @@ function createRouter() {
   return new __WEBPACK_IMPORTED_MODULE_1_vue_router___default.a({
     mode: 'history',
     routes: [{ path: '/', component: __WEBPACK_IMPORTED_MODULE_2__components_Hello_vue__["a" /* default */] }, { path: '/world/:id', component: function component() {
-        return __webpack_require__.e/* import() */(0).then(__webpack_require__.bind(null, 20));
+        return __webpack_require__.e/* import() */(0).then(__webpack_require__.bind(null, 24));
+      } }, { path: '/item/:id', component: function component() {
+        return __webpack_require__.e/* import() */(1).then(__webpack_require__.bind(null, 25));
       } }]
   });
 }
@@ -692,7 +721,7 @@ function injectStyle (ssrContext) {
 var i
 ;(i=__webpack_require__(17),i.__inject__&&i.__inject__(ssrContext),i)
 }
-var normalizeComponent = __webpack_require__(2)
+var normalizeComponent = __webpack_require__(1)
 /* script */
 
 
@@ -730,7 +759,7 @@ var content = __webpack_require__(18);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add CSS to SSR context
-var add = __webpack_require__(1)
+var add = __webpack_require__(3)
 module.exports.__inject__ = function (context) {
   add("14c2aee2", content, false, context)
 };
@@ -739,7 +768,7 @@ module.exports.__inject__ = function (context) {
 /* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(0)(true);
+exports = module.exports = __webpack_require__(2)(true);
 // imports
 
 
@@ -764,6 +793,77 @@ var staticRenderFns = []
 render._withStripped = true
 var esExports = { render: render, staticRenderFns: staticRenderFns }
 /* harmony default export */ __webpack_exports__["a"] = (esExports);
+
+/***/ }),
+/* 20 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = createStore;
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_vuex__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__api__ = __webpack_require__(22);
+
+
+
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex___default.a);
+
+// 假定我们有一个可以返回 Promise 的
+// 通用 API（请忽略此 API 具体实现细节）
+
+
+function createStore() {
+  return new __WEBPACK_IMPORTED_MODULE_1_vuex___default.a.Store({
+    state: {
+      items: {}
+    },
+    actions: {
+      fetchItem: function fetchItem(_ref, id) {
+        var commit = _ref.commit;
+
+        // `store.dispatch()` 会返回 Promise，
+        // 以便我们能够知道数据在何时更新
+        return Object(__WEBPACK_IMPORTED_MODULE_2__api__["a" /* fetchItem */])(id).then(function (item) {
+          commit('setItem', { id: id, item: item });
+        });
+      }
+    },
+    mutations: {
+      setItem: function setItem(state, _ref2) {
+        var id = _ref2.id,
+            item = _ref2.item;
+
+        __WEBPACK_IMPORTED_MODULE_0_vue___default.a.set(state.items, id, item);
+      }
+    }
+  });
+}
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports) {
+
+module.exports = require("vuex");
+
+/***/ }),
+/* 22 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = fetchItem;
+function fetchItem(id) {
+	return Promise.resolve({
+		text: 'hello'
+	});
+}
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports) {
+
+module.exports = require("vuex-router-sync");
 
 /***/ })
 /******/ ]);
