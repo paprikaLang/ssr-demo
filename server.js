@@ -21,13 +21,14 @@ server.get('*', (req, res) => {
     url: req.url
   }
   //为每个请求创建一个新的实例,工厂函数
-  const app = createApp(context)
-  renderer.renderToString(app, context, (err, html) => {
-    if (err) {
-      res.status(500).end('Internal Server Error')
-      return
-    }
-    res.end(html)
+  const app = createApp(context).then(app => {
+    renderer.renderToString(app, context, (err, html) => {
+      if (err) {
+        res.status(500).end('Internal Server Error')
+        return
+      }
+      res.end(html)
+    })
   })
 })
 
