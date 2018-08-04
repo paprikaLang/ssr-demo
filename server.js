@@ -2,6 +2,19 @@ const Vue = require('vue')
 const express = require('express')
 const server = express()
 
+const LRU = require('lru-cache')
+
+const microCache = LRU({
+  max: 100,
+  maxAge: 10000 // 重要提示：条目在 1 秒后过期。
+})
+
+const isCacheable = req => {
+  // 实现逻辑为，检查请求是否是用户特定(user-specific)。
+  // 只有非用户特定(non-user-specific)页面才会缓存
+  return true
+}
+
 const serverBundle = require('./dist/vue-ssr-server-bundle.json')
 const clientManifest = require('./dist/vue-ssr-client-manifest.json')
 
@@ -17,6 +30,16 @@ const renderer = require('vue-server-renderer').createBundleRenderer(serverBundl
 server.use('/dist', express.static('./dist/'))
 
 server.get('*', (req, res) => {
+
+  const cacheable = isCacheable(req)
+  if (cacheable) {
+    const hit = microCache.get(req.url)
+    if (hit) {
+      console.log('=========hit cache==========')
+      return res.end(hit)
+    }
+  }
+
   const context = {
     title: 'vue ssr app',
     meta: `
@@ -34,6 +57,9 @@ server.get('*', (req, res) => {
         return
       }
       res.end(html)
+      if (cacheable) {
+        microCache.set(req.url, html)
+      }
     })
   })
 // })
