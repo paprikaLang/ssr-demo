@@ -5,8 +5,12 @@
 <script>
   // 在这里导入模块，而不是在 `store/index.js` 中
 import fooStoreModule from '../store/modules/foo'
-
+import titleMixin from '../title-mixin.js'
 export default {
+  mixins: [titleMixin],
+  title () {
+    return this.item.text
+  },
   asyncData ({ store, route }) {
     store.registerModule('foo', fooStoreModule)
     return Promise.all([
